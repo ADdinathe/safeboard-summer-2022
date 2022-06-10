@@ -1,0 +1,79 @@
+import * as React from 'react';
+import { observer } from 'mobx-react';
+import {
+  TableHeader,
+  TableItem,
+  TableString,
+  TableWrapper,
+} from './Table.styles';
+
+import { useMainStore } from 'store/hooks';
+
+const columns = [
+  {
+    label: 'id',
+    accesor: 'id',
+  },
+  {
+    label: 'Полное имя',
+    accesor: 'name',
+  },
+  {
+    label: 'Электронная почта',
+    accesor: 'email',
+  },
+  {
+    label: 'Номер телефона',
+    accesor: 'phone',
+  },
+];
+
+const Table: React.FC = () => {
+  const { usersList, sortUsersList } = useMainStore();
+
+  const [sortField, setSortedField] = React.useState('id');
+
+  const [sortOrder, setSortOrder] = React.useState('asc');
+
+  const handleClick = React.useCallback(
+    (accesor: string) => {
+      const sort =
+        accesor === sortField && sortOrder === 'asc' ? 'desc' : 'asc';
+
+      setSortedField(accesor);
+      setSortOrder(sort);
+
+      sortUsersList(accesor, sort);
+    },
+    [sortField, sortOrder]
+  );
+
+  return (
+    <TableWrapper>
+      <thead>
+        <TableString>
+          {columns.map((item) => (
+            <TableHeader
+              key={item.accesor}
+              onClick={() => handleClick(item.accesor)}
+            >
+              {item.label}
+            </TableHeader>
+          ))}
+        </TableString>
+      </thead>
+      <tbody>
+        {usersList.map((item, index) => (
+          <TableString key={index}>
+            <TableItem>{item.id}</TableItem>
+            <TableItem>{item.name}</TableItem>
+            <TableItem>{item.email}</TableItem>
+            <TableItem>{item.phone}</TableItem>
+          </TableString>
+        ))}
+      </tbody>
+    </TableWrapper>
+  );
+};
+
+export default observer(Table);
