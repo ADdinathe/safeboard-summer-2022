@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import {
+  Checkbox,
   TableHeader,
   TableItem,
   TableString,
@@ -10,6 +11,10 @@ import {
 import { useMainStore } from 'store/hooks';
 
 const columns = [
+  {
+    label: '',
+    accesor: 'checkbox',
+  },
   {
     label: 'id',
     accesor: 'id',
@@ -23,29 +28,43 @@ const columns = [
     accesor: 'email',
   },
   {
+    label: 'Группа',
+    accesor: 'group',
+  },
+  {
     label: 'Номер телефона',
     accesor: 'phone',
   },
 ];
 
 const Table: React.FC = () => {
-  const { usersList, sortUsersList } = useMainStore();
+  const { usersListToShow, sortUsersList, checkUser, checkAllUsers } =
+    useMainStore();
 
   const [sortField, setSortedField] = React.useState('id');
 
   const [sortOrder, setSortOrder] = React.useState('asc');
 
+  const handleCheck = React.useCallback(
+    (item: number) => {
+      checkUser(item);
+    },
+    [checkUser]
+  );
+
   const handleClick = React.useCallback(
     (accesor: string) => {
-      const sort =
-        accesor === sortField && sortOrder === 'asc' ? 'desc' : 'asc';
+      if (accesor !== 'checkbox') {
+        const sort =
+          accesor === sortField && sortOrder === 'asc' ? 'desc' : 'asc';
 
-      setSortedField(accesor);
-      setSortOrder(sort);
+        setSortedField(accesor);
+        setSortOrder(sort);
 
-      sortUsersList(accesor, sort);
+        sortUsersList(accesor, sort);
+      }
     },
-    [sortField, sortOrder]
+    [sortField, sortOrder, sortUsersList]
   );
 
   return (
@@ -56,18 +75,30 @@ const Table: React.FC = () => {
             <TableHeader
               key={item.accesor}
               onClick={() => handleClick(item.accesor)}
+              sortOrder={sortField === item.accesor ? sortOrder : undefined}
             >
-              {item.label}
+              {item.accesor === 'checkbox' ? (
+                <Checkbox onClick={checkAllUsers} />
+              ) : (
+                item.label
+              )}
             </TableHeader>
           ))}
         </TableString>
       </thead>
       <tbody>
-        {usersList.map((item, index) => (
-          <TableString key={index}>
+        {usersListToShow.map((item, index) => (
+          <TableString key={index} checked={item.checked}>
+            <TableItem>
+              <Checkbox
+                checked={item.checked}
+                onClick={() => handleCheck(item.id)}
+              />
+            </TableItem>
             <TableItem>{item.id}</TableItem>
             <TableItem>{item.name}</TableItem>
             <TableItem>{item.email}</TableItem>
+            <TableItem>{item.group ? item.group : '--'}</TableItem>
             <TableItem>{item.phone}</TableItem>
           </TableString>
         ))}

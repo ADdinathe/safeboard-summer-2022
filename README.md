@@ -1,15 +1,19 @@
 # safeboard-summer-2022
 
+#####  Перед запуском:
+```
+   npm install -g serve
+```
 #####  Чтобы запустить БД c данными сначала запускаем команду
-
 ```
-   "db-start": "json-server --watch db.json --port 3004",
+   json-server --watch db.json --port 3004
 ```
-
 #####  Потом запускаем dev-server
-
 ```
-   "start": "react-scripts start",
+   react-scripts start
 ```
-
+ или
+```
+   serve -s build
+```
 

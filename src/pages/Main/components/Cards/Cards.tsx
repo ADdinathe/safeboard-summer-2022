@@ -1,21 +1,39 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { CardsWrapper } from './Cards.styles';
-import Card from './components/Card';
+import {
+  CardsWrapper,
+  CardGroup,
+  CardHeader,
+  CardPhone,
+  CardWrapper,
+  Checkbox,
+  CardImage,
+} from './Cards.styles';
 import { useMainStore } from 'store/hooks';
 
 const Cards: React.FC = () => {
   const mainStore = useMainStore();
 
+  const handleCheck = React.useCallback(
+    (item: number) => {
+      mainStore.checkUser(item);
+    },
+    [mainStore]
+  );
+
   return (
     <CardsWrapper>
-      {mainStore.usersList.map((item, index) => (
-        <Card
-          key={index}
-          name={item.name}
-          group={item.group}
-          phone={item.phone}
-        />
+      {mainStore.usersListToShow.map((item, index) => (
+        <CardWrapper key={index} checked={item.checked}>
+          <Checkbox
+            onClick={() => handleCheck(item.id)}
+            checked={item.checked}
+          />
+          <CardHeader>{item.name}</CardHeader>
+          <CardImage />
+          <CardGroup>{item.group}</CardGroup>
+          <CardPhone>{item.phone}</CardPhone>
+        </CardWrapper>
       ))}
     </CardsWrapper>
   );
